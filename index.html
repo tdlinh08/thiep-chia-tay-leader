@@ -290,8 +290,8 @@ const AVATARS = [
   { e: "🐸", bg: "var(--sky)" }, { e: "🐼", bg: "#fff" }, { e: "🦄", bg: "var(--grape)" },
   { e: "🐧", bg: "var(--lemon)" }, { e: "🥸", bg: "var(--bubble)" },
 ];
-const DEFAULT = { name: "Minh Anh", age: 25, wish: "Bạn không già đâu, bạn chỉ là một phiên bản cổ điển hiếm có thôi! Chúc tuổi mới ít deadline, nhiều lương, và đầu gối vẫn hoạt động tốt.", avatar: 2, photo: "" };
-const KEY = "thiep-sn-lay-v1";
+const DEFAULT = { name: "Trần Khánh Toàn", age: 24, wish: "Chúc mừng Toàn đã chính thức bước sang tuổi 24! Bạn không già đâu, bạn chỉ là một phiên bản cổ điển hiếm có thôi. Chúc tuổi mới ít deadline, nhiều lương, crush rep tin nhắn nhanh hơn, và đầu gối vẫn hoạt động tốt như hồi 18.", avatar: 2, photo: "" };
+const KEY = "thiep-sn-toan-24";
 const loadCfg = () => { try { const v = JSON.parse(localStorage.getItem(KEY)); return v ? { ...DEFAULT, ...v } : DEFAULT; } catch (e) { return DEFAULT; } };
 const saveCfg = (c) => { try { localStorage.setItem(KEY, JSON.stringify(c)); } catch (e) {} };
 const pick = (arr, not) => { let x; do { x = arr[Math.floor(Math.random() * arr.length)]; } while (arr.length > 1 && x === not); return x; };
