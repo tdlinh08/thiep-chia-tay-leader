@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Thiệp Sinh Nhật Lầy Lội</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bangers&family=Baloo+2:wght@500;700;800&display=swap">
+<style>
+  /* Layout: một tấm thiệp truyện tranh lớn ở giữa, băng rôn bóng bay phía trên, bánh + hộp quà cạnh nhau, bảng sticker bên dưới */
+  :root {
+    --lemon: #FFE14D;
+    --bubble: #FF7EB6;
+    --teal: #19C3B1;
+    --sky: #6EC8FF;
+    --ink: #17131F;
+    --paper: #FFFBF0;
+    --grape: #9B7BFF;
+    --tomato: #FF5A4E;
+    --font-display: "Bangers", "Baloo 2", "Comic Sans MS", system-ui, sans-serif;
+    --font-body: "Baloo 2", "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  html, body { background: var(--sky); color: var(--ink); }
+  body {
+    font-family: var(--font-body);
+    font-size: 16px;
+    min-height: 100%;
+    background:
+      radial-gradient(circle at 1px 1px, rgba(23,19,31,.13) 1.6px, transparent 1.8px) 0 0 / 18px 18px,
+      linear-gradient(160deg, var(--sky) 0%, #A9E6FF 35%, #FFD3E8 70%, var(--lemon) 100%);
+    background-attachment: fixed;
+    overflow-x: hidden;
+  }
+  .wrap {
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 12px 48px;
+  }
+  .pop { border: 3.5px solid var(--ink); box-shadow: 6px 6px 0 var(--ink); }
+  .pop-sm { border: 3px solid var(--ink); box-shadow: 3px 3px 0 var(--ink); }
+  .display { font-family: var(--font-display); letter-spacing: .04em; }
+  .comic-title {
+    font-family: var(--font-display);
+    letter-spacing: .05em;
+    color: var(--lemon);
+    -webkit-text-stroke: 2px var(--ink);
+    paint-order: stroke fill;
+    text-shadow: 4px 4px 0 var(--ink), 7px 7px 0 var(--bubble);
+    text-wrap: balance;
+    line-height: 1.02;
+  }
+  .btn {
+    font-family: var(--font-display);
+    letter-spacing: .06em;
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    border-radius: 14px;
+    transition: transform .12s ease, box-shadow .12s ease, filter .12s;
+    cursor: pointer;
+    user-select: none;
+  }
+  .btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--ink); filter: saturate(1.15); }
+  .btn:active { transform: translate(3px,3px); box-shadow: 1px 1px 0 var(--ink); }
+  .btn:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible {
+    outline: 3px dashed var(--grape); outline-offset: 3px;
+  }
+  .halftone {
+    background-image: radial-gradient(circle, rgba(23,19,31,.18) 1.4px, transparent 1.6px);
+    background-size: 10px 10px;
+  }
+  .burst {
+    clip-path: polygon(50% 0%, 61% 18%, 82% 8%, 79% 30%, 100% 35%, 84% 50%, 100% 66%, 78% 70%, 82% 92%, 61% 82%, 50% 100%, 39% 82%, 18% 92%, 22% 70%, 0% 66%, 16% 50%, 0% 35%, 21% 30%, 18% 8%, 39% 18%);
+  }
+  .stripes { background: repeating-linear-gradient(135deg, #fff 0 6px, var(--bubble) 6px 12px); }
+  .drip {
+    position: absolute; left: -3px; right: -3px; top: -3px; height: 22px;
+    background: var(--paper);
+    border: 3px solid var(--ink); border-bottom: none;
+    border-radius: 14px 14px 0 0;
+  }
+  .drip::after {
+    content: ""; position: absolute; left: 6%; right: 6%; top: 15px; height: 16px;
+    background:
+      radial-gradient(circle at 8% 0, var(--paper) 9px, transparent 10px),
+      radial-gradient(circle at 27% 0, var(--paper) 13px, transparent 14px),
+      radial-gradient(circle at 48% 0, var(--paper) 8px, transparent 9px),
+      radial-gradient(circle at 70% 0, var(--paper) 12px, transparent 13px),
+      radial-gradient(circle at 92% 0, var(--paper) 9px, transparent 10px);
+  }
+  .field {
+    width: 100%; border: 3px solid var(--ink); border-radius: 12px;
+    padding: 10px 12px; background: #fff; color: var(--ink);
+    font-family: var(--font-body); font-weight: 700; font-size: 16px;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  @keyframes floaty { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-14px) rotate(3deg); } }
+  @keyframes bounceDot { 0%,100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-18px) rotate(180deg); } }
+  @keyframes shake { 0%,100% { transform: rotate(0); } 15% { transform: rotate(-7deg); } 30% { transform: rotate(6deg); } 45% { transform: rotate(-4deg); } 60% { transform: rotate(3deg); } 75% { transform: rotate(0); } }
+  @keyframes wobble { 0%,100% { transform: skewX(0) scaleY(1); } 25% { transform: skewX(2.5deg) scaleY(.98); } 75% { transform: skewX(-2.5deg) scaleY(1.02); } }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .floaty { animation: floaty 3.2s ease-in-out infinite; }
+  .bounce-dot { animation: bounceDot 1.8s ease-in-out infinite; }
+  .shake-loop { animation: shake 1.4s ease-in-out infinite; transform-origin: 50% 90%; }
+  .wobble { animation: wobble 2.6s ease-in-out infinite; transform-origin: 50% 100%; }
+  .marquee { animation: marquee 18s linear infinite; }
+  @media (prefers-reduced-motion: reduce) {
+    .floaty, .bounce-dot, .shake-loop, .wobble, .marquee { animation: none !important; }
+  }
+  #boot { display:grid; place-items:center; min-height:60vh; font-family: var(--font-display); font-size: 28px; letter-spacing:.05em; }
+</style>
+
+</head>
+<body>
+<div id="root"><div id="boot">Đang thổi bóng bay…</div></div>
+
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/framer-motion@10.16.4/dist/framer-motion.js"></script>
+<script src="https://unpkg.com/lucide-react@0.263.1/dist/umd/lucide-react.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.3/confetti.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef, useCallback, useMemo } = React;
+
+/* ---------- Thư viện + phương án dự phòng ---------- */
+const FM = window.Motion || window.FramerMotion || {};
+const STRIP = ["initial","animate","exit","transition","whileHover","whileTap","whileInView","layout","variants","drag","dragConstraints"];
+const motion = FM.motion || new Proxy({}, { get: (_, tag) => React.forwardRef((props, ref) => {
+  const p = { ...props }; STRIP.forEach(k => delete p[k]); return React.createElement(tag, { ...p, ref });
+})});
+const AnimatePresence = FM.AnimatePresence || (({ children }) => <>{children}</>);
+const L = window.LucideReact || window.lucideReact || {};
+const Ico = (name) => L[name] || (() => <span aria-hidden="true">•</span>);
+const [Volume2, VolumeX, Pencil, PartyPopper, Wind, Gift, RotateCcw, X, Sparkles, Music] =
+  ["Volume2","VolumeX","Pencil","PartyPopper","Wind","Gift","RotateCcw","X","Sparkles","Music"].map(Ico);
+const fire = (opts) => { try { window.confetti && window.confetti(opts); } catch (e) {} };
+
+/* ---------- Âm thanh: tổng hợp 100% bằng Web Audio API ---------- */
+const Sound = (() => {
+  let ctx = null, master = null, muted = false, bgmTimer = null, bgmOn = false;
+  const ensure = () => {
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      ctx = new AC(); master = ctx.createGain(); master.gain.value = 0.6; master.connect(ctx.destination);
+    }
+    if (ctx.state === "suspended") ctx.resume();
+    return ctx;
+  };
+  const noiseBuf = (dur) => {
+    const b = ctx.createBuffer(1, ctx.sampleRate * dur, ctx.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    return b;
+  };
+  const tone = (type, f0, f1, dur, vol = 0.3, delay = 0, dest) => {
+    const t = ctx.currentTime + delay, o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(f0, t);
+    if (f1) o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.015);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(dest || master); o.start(t); o.stop(t + dur + 0.05);
+    return o;
+  };
+  const api = {
+    unlock: () => ensure(),
+    setMuted: (m) => { muted = m; if (master) master.gain.value = m ? 0 : 0.6; },
+    puff() { // tiếng phù thổi nến + xèo tắt lửa
+      if (!ensure() || muted) return;
+      const t = ctx.currentTime, s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+      s.buffer = noiseBuf(0.6); f.type = "bandpass"; f.frequency.setValueAtTime(1400, t);
+      f.frequency.exponentialRampToValueAtTime(350, t + 0.5); f.Q.value = 0.8;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.55, t + 0.05);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.55);
+      s.connect(f); f.connect(g); g.connect(master); s.start(t); s.stop(t + 0.6);
+      const s2 = ctx.createBufferSource(), hp = ctx.createBiquadFilter(), g2 = ctx.createGain();
+      s2.buffer = noiseBuf(0.3); hp.type = "highpass"; hp.frequency.value = 5000;
+      g2.gain.setValueAtTime(0.12, t + 0.15); g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.42);
+      s2.connect(hp); hp.connect(g2); g2.connect(master); s2.start(t + 0.15); s2.stop(t + 0.45);
+    },
+    horn() { // kèn giấy tò te + tiếng reo
+      if (!ensure() || muted) return;
+      const t = ctx.currentTime, o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+      o.type = "sawtooth"; o2.type = "square";
+      [o, o2].forEach((x, i) => {
+        x.frequency.setValueAtTime(330 + i * 3, t);
+        x.frequency.linearRampToValueAtTime(440 + i * 3, t + 0.12);
+        x.frequency.setValueAtTime(440 + i * 3, t + 0.5);
+        x.frequency.linearRampToValueAtTime(620 + i * 3, t + 0.75);
+        x.connect(f);
+      });
+      f.type = "lowpass"; f.frequency.value = 2200;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.22, t + 0.04);
+      g.gain.setValueAtTime(0.22, t + 0.7); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.95);
+      f.connect(g); g.connect(master); o.start(t); o2.start(t); o.stop(t + 1); o2.stop(t + 1);
+      const s = ctx.createBufferSource(), bp = ctx.createBiquadFilter(), gc = ctx.createGain();
+      s.buffer = noiseBuf(1.4); bp.type = "bandpass"; bp.frequency.value = 1800; bp.Q.value = 0.5;
+      gc.gain.setValueAtTime(0.0001, t + 0.3); gc.gain.exponentialRampToValueAtTime(0.18, t + 0.55);
+      gc.gain.exponentialRampToValueAtTime(0.0001, t + 1.6);
+      s.connect(bp); bp.connect(gc); gc.connect(master); s.start(t + 0.3); s.stop(t + 1.7);
+      [784, 988, 1175, 1568].forEach((fr, i) => tone("triangle", fr, null, 0.14, 0.12, 0.85 + i * 0.07));
+    },
+    pop() {
+      if (!ensure() || muted) return;
+      tone("sine", 900, 120, 0.12, 0.45);
+      const t = ctx.currentTime, s = ctx.createBufferSource(), g = ctx.createGain();
+      s.buffer = noiseBuf(0.05); g.gain.setValueAtTime(0.3, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.05);
+      s.connect(g); g.connect(master); s.start(t);
+    },
+    boing() {
+      if (!ensure() || muted) return;
+      const t = ctx.currentTime, o = ctx.createOscillator(), lfo = ctx.createOscillator(), lg = ctx.createGain(), g = ctx.createGain();
+      o.type = "sine"; o.frequency.setValueAtTime(140, t); o.frequency.exponentialRampToValueAtTime(520, t + 0.12);
+      o.frequency.exponentialRampToValueAtTime(180, t + 0.6);
+      lfo.frequency.value = 18; lg.gain.value = 40; lfo.connect(lg); lg.connect(o.frequency);
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.4, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.65);
+      o.connect(g); g.connect(master); o.start(t); lfo.start(t); o.stop(t + 0.7); lfo.stop(t + 0.7);
+    },
+    blip() { if (ensure() && !muted) tone("square", 660, 990, 0.08, 0.12); },
+    startBgm() {
+      if (!ensure() || bgmOn) return; bgmOn = true;
+      // Giai điệu Happy Birthday (phạm vi công cộng), nhịp 3/4, phong cách 8-bit
+      const N = { G4:392, A4:440, B4:494, C5:523, D5:587, E5:659, F5:698, G5:784, C4:262, G3:196, F3:175, D4:294 };
+      const mel = [["G4",.75],["G4",.25],["A4",1],["G4",1],["C5",1],["B4",2],
+                   ["G4",.75],["G4",.25],["A4",1],["G4",1],["D5",1],["C5",2],
+                   ["G4",.75],["G4",.25],["G5",1],["E5",1],["C5",1],["B4",1],["A4",2],
+                   ["F5",.75],["F5",.25],["E5",1],["C5",1],["D5",1],["C5",3]];
+      const bass = ["C4","G3","G3","C4","C4","F3","C4","G3"];
+      const beat = 0.36;
+      const loop = () => {
+        if (!bgmOn) return;
+        const bus = ctx.createGain(); bus.gain.value = 0.32; bus.connect(master);
+        let t = 0.05;
+        mel.forEach(([n, d]) => { tone("square", N[n], null, d * beat * 0.92, 0.09, t, bus); t += d * beat; });
+        const bars = Math.round((t - 0.05) / (3 * beat));
+        for (let b = 0; b < bars; b++) {
+          const n = bass[b % bass.length];
+          for (let k = 0; k < 3; k++) tone("triangle", N[n], null, beat * 0.5, k ? 0.05 : 0.11, 0.05 + beat + (b * 3 + k) * beat, bus);
+        }
+        bgmTimer = setTimeout(loop, (t + beat * 2) * 1000);
+      };
+      loop();
+    },
+    stopBgm() { bgmOn = false; clearTimeout(bgmTimer); },
+    isBgm: () => bgmOn,
+  };
+  return api;
+})();
+
+/* ---------- Nội dung lầy ---------- */
+const FORTUNES = [
+  "Năm nay bạn sẽ giàu… kinh nghiệm. Tiền thì để năm sau.",
+  "Điều ước của bạn đã được ghi nhận. Thời gian xử lý: 3 đến 5 kiếp.",
+  "Bạn không già đi, bạn chỉ đang tải bản cập nhật chậm hơn thôi.",
+  "Tuổi mới, crush mới. Crush vẫn không biết bạn tồn tại, nhưng tinh thần là được.",
+  "Từ hôm nay, mỗi lần đứng dậy bạn sẽ phát ra một âm thanh mới. Chúc mừng!",
+  "Sao chiếu mệnh báo: ăn bánh kem xong mai hãy giảm cân.",
+  "Bạn sẽ gặp một người đặc biệt. Đó là shipper. Đừng quên nhận hàng.",
+  "Thổi nến giỏi thế này, năm nay chắc chắn bạn sẽ không cần quạt.",
+];
+const GIFTS = [
+  { icon: "😴", name: "Phiếu ngủ trưa miễn phí 1 lần", note: "Có hiệu lực khi sếp đi vắng." },
+  { icon: "🧪", name: "Thuốc trường sinh", note: "Thành phần: 100% nước lọc. Uống đủ 2 lít mỗi ngày." },
+  { icon: "🦴", name: "Tuýp dầu xoa bóp xương khớp", note: "Quà thiết thực nhất cho tuổi mới." },
+  { icon: "🥔", name: "Một củ khoai tây", note: "Chỉ một củ. Đừng hỏi tại sao." },
+  { icon: "🍜", name: "Gói mì tôm phiên bản giới hạn", note: "Giới hạn ở chỗ chỉ có một gói." },
+  { icon: "🎟️", name: "Voucher giảm 0% toàn cửa hàng", note: "Áp dụng cho mọi đơn hàng. Không hoàn tiền." },
+  { icon: "👓", name: "Kính lão dự phòng", note: "Để đọc được dòng chữ này rõ hơn." },
+  { icon: "🗺️", name: "Bản đồ kho báu", note: "Vẽ bằng bút bi. Kho báu là cái tủ lạnh." },
+  { icon: "🤗", name: "Một cái ôm online", note: "Không cần trả lại. Không bảo hành." },
+  { icon: "🪴", name: "Cây xương rồng", note: "Giống bạn: dễ nuôi, hơi gai góc." },
+];
+const STICKERS = [
+  { text: "BÙM!", bg: "var(--lemon)", rot: -6, sfx: "pop", burst: true },
+  { text: "LÃO HÓA HOÀN HẢO", bg: "var(--bubble)", rot: 3, sfx: "boing" },
+  { text: "KHÔNG HOÀN TIỀN!", bg: "var(--tomato)", rot: -2, sfx: "pop", light: true },
+  { text: "CƯỜI SẶC", bg: "var(--teal)", rot: 5, sfx: "boing" },
+  { text: "ỐI DỒI ÔI!", bg: "var(--sky)", rot: -4, sfx: "pop", burst: true },
+  { text: "ĐAU LƯNG +1", bg: "var(--grape)", rot: 2, sfx: "boing", light: true },
+  { text: "VẪN TRẺ (CHẮC VẬY)", bg: "var(--lemon)", rot: -3, sfx: "pop" },
+  { text: "HẾT HẠN BẢO HÀNH", bg: "#fff", rot: 4, sfx: "boing" },
+];
+const AVATARS = [
+  { e: "🐶", bg: "var(--lemon)" }, { e: "🐱", bg: "var(--bubble)" }, { e: "🦖", bg: "var(--teal)" },
+  { e: "🐸", bg: "var(--sky)" }, { e: "🐼", bg: "#fff" }, { e: "🦄", bg: "var(--grape)" },
+  { e: "🐧", bg: "var(--lemon)" }, { e: "🥸", bg: "var(--bubble)" },
+];
+const DEFAULT = { name: "Minh Anh", age: 25, wish: "Bạn không già đâu, bạn chỉ là một phiên bản cổ điển hiếm có thôi! Chúc tuổi mới ít deadline, nhiều lương, và đầu gối vẫn hoạt động tốt.", avatar: 2, photo: "" };
+const KEY = "thiep-sn-lay-v1";
+const loadCfg = () => { try { const v = JSON.parse(localStorage.getItem(KEY)); return v ? { ...DEFAULT, ...v } : DEFAULT; } catch (e) { return DEFAULT; } };
+const saveCfg = (c) => { try { localStorage.setItem(KEY, JSON.stringify(c)); } catch (e) {} };
+const pick = (arr, not) => { let x; do { x = arr[Math.floor(Math.random() * arr.length)]; } while (arr.length > 1 && x === not); return x; };
+
+/* ---------- Băng rôn ---------- */
+function Balloon({ color, left, delay, size = 1, top = 0 }) {
+  return (
+    <div className="floaty absolute" style={{ left, top, animationDelay: delay, transform: `scale(${size})` }} aria-hidden="true">
+      <svg width="54" height="110" viewBox="0 0 54 110">
+        <path d="M27 70 Q22 85 30 95 Q36 103 28 110" stroke="#17131F" strokeWidth="2.5" fill="none" />
+        <ellipse cx="27" cy="34" rx="23" ry="30" fill={color} stroke="#17131F" strokeWidth="3.5" />
+        <ellipse cx="18" cy="22" rx="5" ry="9" fill="#fff" opacity=".7" />
+        <path d="M22 63 L32 63 L27 71 Z" fill={color} stroke="#17131F" strokeWidth="3" strokeLinejoin="round" />
+      </svg>
+    </div>
+  );
+}
+function Banner() {
+  const dots = useMemo(() => Array.from({ length: 22 }, (_, i) => ({
+    left: `${(i * 37) % 100}%`, top: `${10 + ((i * 53) % 70)}%`,
+    c: ["var(--lemon)","var(--bubble)","var(--teal)","var(--grape)","var(--tomato)","#fff"][i % 6],
+    d: `${(i % 7) * 0.25}s`, s: 8 + (i % 4) * 3, sq: i % 3 === 0,
+  })), []);
+  const flags = ["var(--bubble)","var(--lemon)","var(--teal)","var(--sky)","var(--grape)","var(--tomato)"];
+  return (
+    <div className="relative h-36 sm:h-44 overflow-hidden" aria-hidden="true">
+      {dots.map((d, i) => (
+        <span key={i} className="bounce-dot absolute border-2 border-[#17131F]"
+          style={{ left: d.left, top: d.top, width: d.s, height: d.s, background: d.c, borderRadius: d.sq ? 2 : 999, animationDelay: d.d }} />
+      ))}
+      <svg className="absolute inset-x-0 top-1 w-full h-16" viewBox="0 0 1000 70" preserveAspectRatio="none">
+        <path d="M0 8 Q500 60 1000 8" stroke="#17131F" strokeWidth="3" fill="none" vectorEffect="non-scaling-stroke" />
+        {Array.from({ length: 14 }, (_, i) => {
+          const x = 30 + i * 70, y = 8 + 52 * 4 * ((x / 1000) * (1 - x / 1000)) * 0.95;
+          return <path key={i} d={`M${x - 22} ${y} L${x + 22} ${y} L${x} ${y + 38} Z`} fill={flags[i % 6]} stroke="#17131F" strokeWidth="3" vectorEffect="non-scaling-stroke" strokeLinejoin="round" />;
+        })}
+      </svg>
+      <Balloon color="#FF7EB6" left="3%" top={30} delay="0s" />
+      <Balloon color="#FFE14D" left="14%" top={46} delay=".6s" size={.85} />
+      <Balloon color="#19C3B1" left="80%" top={34} delay=".3s" />
+      <Balloon color="#9B7BFF" left="90%" top={50} delay="1s" size={.8} />
+      <Balloon color="#FF5A4E" left="69%" top={60} delay="1.4s" size={.7} />
+    </div>
+  );
+}
+
+/* ---------- Bánh kem + nến ---------- */
+function Candle({ lit, onBlow, color, idx }) {
+  const [puffs, setPuffs] = useState([]);
+  const blow = () => {
+    if (!lit) return;
+    const id = Date.now() + idx;
+    setPuffs(p => [...p, id]);
+    setTimeout(() => setPuffs(p => p.filter(x => x !== id)), 1400);
+    onBlow();
+  };
+  return (
+    <button type="button" onClick={blow} aria-label={lit ? `Thổi nến số ${idx + 1}` : `Nến số ${idx + 1} đã tắt`}
+      className="relative flex flex-col items-center group" style={{ width: 22, cursor: lit ? "pointer" : "default" }}>
+      <div className="relative h-10 w-full flex justify-center items-end">
+        <AnimatePresence>
+          {lit && (
+            <motion.div key="flame" initial={{ scale: 0 }} animate={{ scale: [1, 1.15, .92, 1.08, 1], rotate: [-4, 5, -3, 4, -4] }}
+              exit={{ scale: 0, opacity: 0, y: -8, transition: { duration: .25 } }}
+              transition={{ duration: 0.9 + (idx % 3) * 0.15, repeat: Infinity, ease: "easeInOut" }}
+              style={{ transformOrigin: "50% 100%" }} className="relative">
+              <div style={{ width: 16, height: 26, borderRadius: "50% 50% 50% 50% / 62% 62% 38% 38%",
+                background: "radial-gradient(circle at 50% 70%, #fff 0 18%, #FFE14D 30%, #FF9F1C 62%, #FF5A4E 100%)",
+                border: "2.5px solid #17131F", boxShadow: "0 0 18px 6px rgba(255,200,60,.65), 0 0 40px 14px rgba(255,140,40,.3)" }} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+        {puffs.map(id => (
+          <div key={id} className="absolute bottom-2 left-1/2 pointer-events-none">
+            {[0,1,2,3,4].map(k => (
+              <motion.span key={k} className="absolute block rounded-full"
+                style={{ width: 14 + k * 4, height: 14 + k * 4, background: "rgba(230,230,240,.9)", border: "2px solid rgba(23,19,31,.55)", marginLeft: -(7 + k * 2) }}
+                initial={{ y: 0, x: 0, opacity: .95, scale: .4 }}
+                animate={{ y: -50 - k * 18, x: (k % 2 ? 1 : -1) * (6 + k * 5), opacity: 0, scale: 1.3 }}
+                transition={{ duration: 1.1, delay: k * 0.07, ease: "easeOut" }} />
+            ))}
+          </div>
+        ))}
+        {!lit && <span className="absolute bottom-0 w-[3px] h-2 bg-[#17131F] rounded" />}
+      </div>
+      <motion.div whileHover={lit ? { scale: 1.12, rotate: -4 } : {}} whileTap={lit ? { scale: .9 } : {}}
+        className="w-[14px] h-12 rounded-t-md border-[3px] border-[#17131F]"
+        style={{ background: `repeating-linear-gradient(160deg, ${color} 0 6px, #fff 6px 11px)` }} />
+    </button>
+  );
+}
+
+function Cake({ count, lit, setLit, onAllOut }) {
+  const colors = ["#FF7EB6","#19C3B1","#9B7BFF","#6EC8FF","#FF5A4E","#FFB01F"];
+  const blowOne = (i) => {
+    Sound.puff();
+    setLit(prev => {
+      const n = prev.map((v, k) => (k === i ? false : v));
+      if (n.every(v => !v) && prev.some(v => v)) setTimeout(onAllOut, 350);
+      return n;
+    });
+  };
+  return (
+    <div className="flex flex-col items-center select-none">
+      <div className="wobble flex flex-col items-center">
+        <div className="flex gap-[6px] justify-center relative z-10 -mb-1 px-2 flex-wrap" style={{ maxWidth: 180 }}>
+          {lit.map((on, i) => <Candle key={i} idx={i} lit={on} color={colors[i % colors.length]} onBlow={() => blowOne(i)} />)}
+        </div>
+        {/* tầng trên */}
+        <div className="relative w-40 h-16 rounded-t-2xl border-[3.5px] border-[#17131F]" style={{ background: "var(--lemon)" }}>
+          <div className="drip" />
+          <div className="absolute bottom-2 left-0 right-0 flex justify-around px-3">
+            {[0,1,2,3].map(i => <span key={i} className="w-3 h-3 rounded-full border-2 border-[#17131F]" style={{ background: colors[i] }} />)}
+          </div>
+        </div>
+        {/* tầng giữa */}
+        <div className="relative w-56 h-20 rounded-t-2xl border-[3.5px] border-t-0 border-[#17131F] -mt-[1px] overflow-hidden" style={{ background: "var(--teal)" }}>
+          <div className="halftone absolute inset-0 opacity-60" />
+          <div className="absolute top-0 inset-x-0 h-5 bg-[var(--paper)] border-b-[3px] border-[#17131F]" style={{ borderRadius: "0 0 40% 40% / 0 0 100% 100%" }} />
+          <div className="absolute bottom-3 inset-x-0 text-center display text-xl text-white" style={{ WebkitTextStroke: "1.5px #17131F", paintOrder: "stroke fill" }}>
+            HẾT HẠN SỬ DỤNG?
+          </div>
+        </div>
+        {/* tầng dưới */}
+        <div className="relative w-72 max-w-[86vw] h-24 rounded-t-2xl rounded-b-md border-[3.5px] border-t-0 border-[#17131F] -mt-[1px] overflow-hidden" style={{ background: "var(--bubble)" }}>
+          <div className="absolute top-0 inset-x-0 h-6 bg-[var(--paper)] border-b-[3px] border-[#17131F]" style={{ borderRadius: "0 0 50% 50% / 0 0 100% 100%" }} />
+          <div className="absolute bottom-0 inset-x-0 h-8 stripes border-t-[3px] border-[#17131F]" />
+          <div className="absolute top-8 inset-x-0 flex justify-center gap-6">
+            {/* mặt cười của bánh */}
+            <span className="w-3 h-4 rounded-full bg-[#17131F]" />
+            <span className="w-3 h-4 rounded-full bg-[#17131F]" />
+          </div>
+          <div className="absolute top-[52px] left-1/2 -translate-x-1/2 w-8 h-3 border-b-[3.5px] border-[#17131F] rounded-b-full" />
+        </div>
+      </div>
+      {/* đĩa */}
+      <div className="w-80 max-w-[94vw] h-5 rounded-full border-[3.5px] border-[#17131F] bg-white -mt-1" style={{ boxShadow: "0 6px 0 #17131F" }} />
+    </div>
+  );
+}
+
+/* ---------- Hộp quà ---------- */
+function GiftBox({ onOpen, opened, item, onReset }) {
+  return (
+    <div className="flex flex-col items-center gap-4 w-full">
+      <button type="button" onClick={opened ? undefined : onOpen} aria-label={opened ? "Hộp quà đã mở" : "Mở hộp quà bất ngờ"}
+        className={`relative w-44 h-48 ${opened ? "" : "shake-loop"}`} style={{ cursor: opened ? "default" : "pointer" }}>
+        {/* nắp */}
+        <motion.div className="absolute left-1/2 top-6 z-20" style={{ x: "-50%" }}
+          animate={opened ? { y: -90, rotate: -28, x: "-80%" } : { y: 0, rotate: 0, x: "-50%" }}
+          transition={{ type: "spring", stiffness: 260, damping: 11 }}>
+          <div className="relative w-48 h-12 rounded-lg border-[3.5px] border-[#17131F]" style={{ background: "var(--grape)", boxShadow: "4px 4px 0 #17131F" }}>
+            <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-8 border-x-[3px] border-[#17131F]" style={{ background: "var(--lemon)" }} />
+            {/* nơ khổng lồ */}
+            <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex items-end">
+              <div className="w-14 h-12 border-[3.5px] border-[#17131F] rounded-[60%_10%_60%_60%] -mr-2 rotate-[-18deg]" style={{ background: "var(--lemon)" }} />
+              <div className="w-6 h-6 rounded-full border-[3.5px] border-[#17131F] z-10 mb-1" style={{ background: "var(--tomato)" }} />
+              <div className="w-14 h-12 border-[3.5px] border-[#17131F] rounded-[10%_60%_60%_60%] -ml-2 rotate-[18deg]" style={{ background: "var(--lemon)" }} />
+            </div>
+          </div>
+        </motion.div>
+        {/* thân hộp */}
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-40 h-32 rounded-b-lg border-[3.5px] border-[#17131F] overflow-hidden" style={{ background: "var(--grape)", boxShadow: "6px 6px 0 #17131F" }}>
+          <div className="halftone absolute inset-0 opacity-50" />
+          <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-8 border-x-[3px] border-[#17131F]" style={{ background: "var(--lemon)" }} />
+          {!opened && <span className="absolute bottom-2 right-2 display text-xs bg-white px-1.5 border-2 border-[#17131F] rounded rotate-[-6deg]">ĐỪNG LẮC!</span>}
+        </div>
+        {/* món quà bật ra */}
+        <AnimatePresence>
+          {opened && item && (
+            <motion.div key={item.name} className="absolute left-1/2 bottom-16 z-10 text-6xl"
+              initial={{ y: 30, scale: 0, x: "-50%" }} animate={{ y: -70, scale: 1.25, x: "-50%", rotate: [0, -12, 12, 0] }}
+              exit={{ scale: 0 }} transition={{ type: "spring", stiffness: 300, damping: 10 }} aria-hidden="true">
+              {item.icon}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </button>
+
+      <div className="min-h-[118px] w-full max-w-xs flex items-start justify-center">
+        <AnimatePresence mode="wait">
+          {opened && item ? (
+            <motion.div key={item.name} initial={{ scale: .6, opacity: 0, rotate: -4 }} animate={{ scale: 1, opacity: 1, rotate: -1 }}
+              exit={{ scale: .6, opacity: 0 }} transition={{ type: "spring", stiffness: 320, damping: 16 }}
+              className="pop rounded-2xl bg-white px-4 py-3 text-center w-full">
+              <div className="text-xs font-extrabold tracking-widest uppercase text-[#17131F]/60">Bạn nhận được</div>
+              <div className="display text-2xl leading-tight">{item.name}</div>
+              <div className="text-sm font-bold opacity-80 mb-2">{item.note}</div>
+              <button type="button" onClick={onReset} className="btn text-sm px-3 py-1 inline-flex items-center gap-1.5" style={{ background: "var(--lemon)" }}>
+                <RotateCcw size={14} strokeWidth={3} /> GÓI LẠI, MỞ HỘP KHÁC
+              </button>
+            </motion.div>
+          ) : (
+            <motion.p key="hint" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="display text-xl text-center px-3 py-1 bg-white pop-sm rounded-xl rotate-2">
+              Bấm vào hộp nếu dám!
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Sticker ---------- */
+function Sticker({ s, i, onHit }) {
+  const [hits, setHits] = useState([]);
+  const click = () => {
+    s.sfx === "pop" ? Sound.pop() : Sound.boing();
+    const id = Date.now();
+    setHits(h => [...h, id]); setTimeout(() => setHits(h => h.filter(x => x !== id)), 900);
+    onHit();
+  };
+  return (
+    <motion.button type="button" onClick={click}
+      initial={{ scale: 0, rotate: s.rot * 3 }} animate={{ scale: 1, rotate: s.rot }}
+      transition={{ type: "spring", stiffness: 260, damping: 13, delay: 0.3 + i * 0.06 }}
+      whileHover={{ scale: 1.08, rotate: -s.rot }} whileTap={{ scale: .82, rotate: s.rot * 2 }}
+      className="relative min-h-[84px] w-full grid place-items-center" aria-label={`Sticker: ${s.text}`}>
+      {s.burst ? (
+        <span className="absolute inset-0 burst" style={{ background: "#17131F" }}>
+          <span className="absolute inset-[5px] burst" style={{ background: s.bg }} />
+        </span>
+      ) : (
+        <span className="absolute inset-1 pop-sm rounded-2xl" style={{ background: s.bg }} />
+      )}
+      <span className={`relative display text-[clamp(15px,3.6vw,22px)] leading-[1.05] px-3 text-center ${s.light ? "text-white" : "text-[#17131F]"}`}
+        style={s.light ? { WebkitTextStroke: "1.2px #17131F", paintOrder: "stroke fill" } : {}}>
+        {s.text}
+      </span>
+      {hits.map(id => (
+        <motion.span key={id} className="absolute display text-lg pointer-events-none text-[#17131F] bg-white border-2 border-[#17131F] rounded-full px-2"
+          initial={{ y: 0, opacity: 1, scale: .6 }} animate={{ y: -56, opacity: 0, scale: 1.2 }} transition={{ duration: .85 }}>
+          {s.sfx === "pop" ? "BỤP!" : "BOING!"}
+        </motion.span>
+      ))}
+    </motion.button>
+  );
+}
+
+/* ---------- Bảng tuỳ chỉnh ---------- */
+function Customizer({ open, onClose, cfg, setCfg }) {
+  const [draft, setDraft] = useState(cfg);
+  useEffect(() => { if (open) setDraft(cfg); }, [open]);
+  useEffect(() => {
+    const k = (e) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", k); return () => window.removeEventListener("keydown", k);
+  }, [onClose]);
+  const set = (k, v) => setDraft(d => ({ ...d, [k]: v }));
+  const save = (e) => {
+    e.preventDefault();
+    const age = Math.max(1, Math.min(150, parseInt(draft.age, 10) || 1));
+    const next = { ...draft, name: draft.name.trim() || "Bạn Ơi", age };
+    setCfg(next); saveCfg(next); Sound.horn(); onClose();
+  };
+  return (
+    <AnimatePresence>
+      {open && (
+        <motion.div className="fixed inset-0 z-50 flex justify-end" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <div className="absolute inset-0 bg-[#17131F]/50" onClick={onClose} />
+          <motion.form onSubmit={save} role="dialog" aria-modal="true" aria-label="Tùy chỉnh thiệp"
+            initial={{ x: "105%" }} animate={{ x: 0 }} exit={{ x: "105%" }} transition={{ type: "spring", stiffness: 260, damping: 26 }}
+            className="relative h-full w-full max-w-md overflow-y-auto border-l-[4px] border-[#17131F] bg-[var(--paper)] flex flex-col gap-4"
+            style={{ paddingTop: "calc(20px + env(safe-area-inset-top, 0px))", paddingBottom: "calc(24px + env(safe-area-inset-bottom, 0px))", paddingLeft: 20, paddingRight: "max(20px, env(safe-area-inset-right, 0px))" }}>
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="comic-title text-4xl">SỬA THIỆP</h2>
+              <button type="button" onClick={onClose} className="btn p-2 bg-white" aria-label="Đóng"><X size={20} strokeWidth={3} /></button>
+            </div>
+            <label className="flex flex-col gap-1.5 font-extrabold" htmlFor="f-name">Tên người được chúc
+              <input id="f-name" className="field" maxLength={24} value={draft.name} onChange={e => set("name", e.target.value)} placeholder="Ví dụ: Tuấn" />
+            </label>
+            <label className="flex flex-col gap-1.5 font-extrabold" htmlFor="f-age">Tuổi (level)
+              <input id="f-age" className="field" type="number" min="1" max="150" inputMode="numeric" value={draft.age} onChange={e => set("age", e.target.value)} />
+            </label>
+            <label className="flex flex-col gap-1.5 font-extrabold" htmlFor="f-wish">Lời chúc lầy lội
+              <textarea id="f-wish" className="field min-h-[110px] resize-y" maxLength={240} value={draft.wish} onChange={e => set("wish", e.target.value)} />
+              <span className="text-xs font-bold opacity-60 self-end">{draft.wish.length}/240</span>
+            </label>
+            <fieldset className="flex flex-col gap-2">
+              <legend className="font-extrabold mb-1.5">Chọn avatar hoạt hình</legend>
+              <div className="grid grid-cols-4 gap-3">
+                {AVATARS.map((a, i) => (
+                  <button type="button" key={i} onClick={() => { set("avatar", i); set("photo", ""); Sound.blip(); }}
+                    aria-pressed={draft.avatar === i && !draft.photo}
+                    className={`aspect-square max-w-full rounded-2xl text-3xl grid place-items-center border-[3px] border-[#17131F] transition ${draft.avatar === i && !draft.photo ? "shadow-[0_0_0_4px_var(--tomato)] scale-105" : "shadow-[3px_3px_0_#17131F] hover:-translate-y-0.5"}`}
+                    style={{ background: a.bg }}>{a.e}</button>
+                ))}
+              </div>
+            </fieldset>
+            <label className="flex flex-col gap-1.5 font-extrabold" htmlFor="f-photo">Hoặc tải ảnh lên
+              <input id="f-photo" type="file" accept="image/*" className="field text-sm"
+                onChange={e => {
+                  const f = e.target.files && e.target.files[0]; if (!f) return;
+                  const r = new FileReader(); r.onload = () => set("photo", r.result); r.readAsDataURL(f);
+                }} />
+              <span className="text-xs font-bold opacity-60">Ảnh được lưu ngay trong trình duyệt của bạn.</span>
+            </label>
+            {draft.photo && (
+              <div className="flex items-center gap-3">
+                <img src={draft.photo} alt="Ảnh đã chọn" className="w-16 h-16 rounded-full object-cover border-[3px] border-[#17131F]" />
+                <button type="button" className="btn px-3 py-1 text-sm bg-white" onClick={() => set("photo", "")}>BỎ ẢNH</button>
+              </div>
+            )}
+            <div className="flex gap-3 mt-auto pt-2 flex-wrap">
+              <button type="submit" className="btn flex-1 px-4 py-3 text-xl" style={{ background: "var(--teal)" }}>LƯU THIỆP</button>
+              <button type="button" className="btn px-4 py-3 text-xl bg-white" onClick={() => setDraft(DEFAULT)}>MẶC ĐỊNH</button>
+            </div>
+          </motion.form>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+/* ---------- Ứng dụng ---------- */
+function App() {
+  const [cfg, setCfg] = useState(loadCfg);
+  const candleCount = Math.min(Math.max(parseInt(cfg.age, 10) || 1, 1), 9);
+  const [lit, setLit] = useState(() => Array(candleCount).fill(true));
+  const [fortune, setFortune] = useState(null);
+  const [opened, setOpened] = useState(false);
+  const [item, setItem] = useState(null);
+  const [muted, setMuted] = useState(false);
+  const [bgm, setBgm] = useState(false);
+  const [drawer, setDrawer] = useState(false);
+  const [laughs, setLaughs] = useState(0);
+  const [toast, setToast] = useState(null);
+  const toastT = useRef();
+
+  useEffect(() => { setLit(Array(candleCount).fill(true)); setFortune(null); }, [candleCount]);
+  useEffect(() => {
+    const unlock = () => Sound.unlock();
+    window.addEventListener("pointerdown", unlock, { once: true });
+    return () => window.removeEventListener("pointerdown", unlock);
+  }, []);
+
+  const say = (msg) => { setToast(msg); clearTimeout(toastT.current); toastT.current = setTimeout(() => setToast(null), 2600); };
+
+  const celebrate = useCallback(() => {
+    Sound.horn();
+    const colors = ["#FFE14D","#FF7EB6","#19C3B1","#6EC8FF","#9B7BFF","#FF5A4E"];
+    fire({ particleCount: 160, spread: 100, origin: { y: .65 }, colors, scalar: 1.1 });
+    setTimeout(() => {
+      fire({ particleCount: 70, angle: 60, spread: 60, origin: { x: 0, y: .8 }, colors, ticks: 300 });
+      fire({ particleCount: 70, angle: 120, spread: 60, origin: { x: 1, y: .8 }, colors, ticks: 300 });
+    }, 200);
+    // "dây kim tuyến": hạt dài, rơi chậm từ trên xuống
+    let n = 0; const iv = setInterval(() => {
+      fire({ particleCount: 14, startVelocity: 0, ticks: 420, gravity: .45, origin: { x: Math.random(), y: -0.05 }, colors, shapes: ["square"], scalar: 1.6, drift: (Math.random() - .5) * 1.5 });
+      if (++n > 10) clearInterval(iv);
+    }, 120);
+    say("ĂN MỪNG! Hàng xóm đang gọi công an phường…");
+  }, []);
+
+  const allOut = () => {
+    setFortune(f => pick(FORTUNES, f));
+    fire({ particleCount: 90, spread: 70, origin: { y: .55 }, colors: ["#FFE14D","#FF7EB6","#19C3B1"] });
+    say("Đã thổi tắt hết! Điều ước đang được gửi lên… hàng chờ.");
+  };
+  const blowAll = () => {
+    if (!lit.some(Boolean)) return;
+    lit.forEach((on, i) => on && setTimeout(() => Sound.puff(), i * 70));
+    setLit(lit.map(() => false));
+    setTimeout(allOut, 400);
+  };
+  const relight = () => { Sound.blip(); setLit(Array(candleCount).fill(true)); setFortune(null); say("Thắp lại rồi. Ước lại đi, lần này nghiêm túc hơn."); };
+
+  const openGift = () => {
+    const it = pick(GIFTS, item);
+    setItem(it); setOpened(true); Sound.horn();
+    setTimeout(() => fire({ particleCount: 120, spread: 80, startVelocity: 42, origin: { x: window.innerWidth > 900 ? .7 : .5, y: .6 }, colors: ["#9B7BFF","#FFE14D","#FF5A4E","#fff"] }), 120);
+  };
+  const resetGift = () => { Sound.blip(); setOpened(false); setTimeout(() => setItem(null), 300); };
+
+  const toggleMute = () => { const m = !muted; setMuted(m); Sound.setMuted(m); if (!m) Sound.blip(); };
+  const toggleBgm = () => {
+    Sound.unlock();
+    if (bgm) { Sound.stopBgm(); setBgm(false); } else { Sound.startBgm(); setBgm(true); if (muted) { setMuted(false); Sound.setMuted(false); } }
+  };
+
+  const av = AVATARS[cfg.avatar] || AVATARS[0];
+  const litCount = lit.filter(Boolean).length;
+
+  return (
+    <div className="wrap">
+      {/* Thanh công cụ nổi */}
+      <div className="sticky z-40 flex justify-end gap-2 flex-wrap" style={{ top: "calc(8px + env(safe-area-inset-top, 0px))" }}>
+        <button type="button" onClick={toggleBgm} className="btn px-3 py-2 flex items-center gap-1.5 text-base" style={{ background: bgm ? "var(--teal)" : "#fff" }} aria-pressed={bgm}>
+          <Music size={18} strokeWidth={3} /> <span>{bgm ? "TẮT NHẠC" : "BẬT NHẠC"}</span>
+        </button>
+        <button type="button" onClick={toggleMute} className="btn p-2.5" style={{ background: muted ? "var(--tomato)" : "var(--lemon)" }} aria-label={muted ? "Bật tiếng" : "Tắt tiếng"}>
+          {muted ? <VolumeX size={20} strokeWidth={3} /> : <Volume2 size={20} strokeWidth={3} />}
+        </button>
+        <button type="button" onClick={() => { Sound.blip(); setDrawer(true); }} className="btn px-3 py-2 flex items-center gap-1.5 text-base" style={{ background: "var(--bubble)" }}>
+          <Pencil size={18} strokeWidth={3} /> <span>SỬA THIỆP</span>
+        </button>
+      </div>
+
+      <Banner />
+
+      <motion.main initial={{ y: 60, opacity: 0, rotate: -2 }} animate={{ y: 0, opacity: 1, rotate: 0 }} transition={{ type: "spring", stiffness: 120, damping: 14 }}
+        className="relative mx-auto max-w-5xl -mt-6 rounded-[28px] pop bg-[var(--paper)] overflow-hidden">
+        {/* Băng chữ chạy */}
+        <div className="border-b-[3.5px] border-[#17131F] bg-[var(--ink)] overflow-hidden py-1.5" aria-hidden="true">
+          <div className="marquee whitespace-nowrap display text-[var(--lemon)] text-lg flex w-max">
+            {Array(2).fill(0).map((_, k) => (
+              <span key={k} className="pr-8">
+                ★ CẢNH BÁO: NGƯỜI NÀY VỪA GIÀ THÊM 1 TUỔI ★ BÁNH KEM KHÔNG CHỨA CALO (THEO LỜI ĐỒN) ★ HÃY CƯ XỬ NHƯ NGƯỜI LỚN, HOẶC ĐỪNG ★ CẢNH BÁO: NGƯỜI NÀY VỪA GIÀ THÊM 1 TUỔI ★ BÁNH KEM KHÔNG CHỨA CALO (THEO LỜI ĐỒN) ★ HÃY CƯ XỬ NHƯ NGƯỜI LỚN, HOẶC ĐỪNG ★
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="px-4 sm:px-8 pt-6 pb-8 flex flex-col gap-8">
+          {/* Tiêu đề */}
+          <header className="flex flex-col sm:flex-row items-center gap-5 sm:gap-7 text-center sm:text-left">
+            <motion.div whileHover={{ rotate: 8, scale: 1.05 }} whileTap={{ scale: .9, rotate: -10 }} onClick={() => Sound.boing()}
+              className="relative shrink-0 w-28 h-28 sm:w-32 sm:h-32 rounded-full pop grid place-items-center text-6xl overflow-hidden cursor-pointer" style={{ background: av.bg }}>
+              {cfg.photo ? <img src={cfg.photo} alt={`Ảnh của ${cfg.name}`} className="w-full h-full object-cover" /> : <span aria-hidden="true">{av.e}</span>}
+              <span className="absolute -top-1 left-1/2 -translate-x-1/2 text-3xl" aria-hidden="true">🥳</span>
+            </motion.div>
+            <div className="flex flex-col gap-3 items-center sm:items-start min-w-0">
+              <h1 className="comic-title text-[clamp(38px,8vw,76px)] break-words">
+                CHÚC MỪNG SINH NHẬT <span style={{ color: "var(--bubble)" }}>{cfg.name.toUpperCase()}</span>!
+              </h1>
+              <motion.div key={cfg.age} initial={{ scale: 0, rotate: -20 }} animate={{ scale: 1, rotate: -3 }} transition={{ type: "spring", stiffness: 400, damping: 12 }}
+                className="inline-flex items-center gap-2 pop-sm rounded-full px-4 py-1.5 display text-lg sm:text-xl" style={{ background: "var(--teal)", color: "#fff", WebkitTextStroke: "1px #17131F", paintOrder: "stroke fill" }}>
+                <Sparkles size={20} strokeWidth={3} color="#17131F" /> LÊN LEVEL: {cfg.age} TUỔI
+                <span className="text-sm bg-white text-[#17131F] rounded-full px-2 border-2 border-[#17131F]" style={{ WebkitTextStroke: 0 }}>+{cfg.age * 365} EXP</span>
+              </motion.div>
+            </div>
+          </header>
+
+          {/* Lời chúc */}
+          <motion.blockquote initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .25 }}
+            className="relative pop rounded-3xl bg-white px-5 py-4 text-lg sm:text-xl font-bold leading-relaxed max-w-3xl mx-auto w-full">
+            <span className="absolute -top-4 left-6 display text-base px-3 rounded-full border-[3px] border-[#17131F]" style={{ background: "var(--lemon)" }}>LỜI CHÚC CHÍNH THỨC</span>
+            {cfg.wish}
+            <span className="absolute -bottom-[18px] left-14 w-8 h-8 bg-white border-r-[3.5px] border-b-[3.5px] border-[#17131F] rotate-45" aria-hidden="true" />
+          </motion.blockquote>
+
+          {/* Sân khấu: bánh + quà */}
+          <section className="grid md:grid-cols-[1.3fr_1fr] gap-8 items-start" aria-label="Bánh kem và hộp quà">
+            <div className="flex flex-col items-center gap-5 rounded-3xl border-[3.5px] border-dashed border-[#17131F] p-5 relative" style={{ background: "rgba(255,225,77,.25)" }}>
+              <span className="absolute -top-4 left-4 display text-lg px-3 rounded-lg pop-sm" style={{ background: "var(--bubble)" }}>BÁNH KEM BIẾT RUNG</span>
+              <p className="text-sm font-bold opacity-70 text-center mt-2">
+                {candleCount < (parseInt(cfg.age, 10) || 1) ? `Tiệm chỉ còn ${candleCount} cây nến cho ${cfg.age} tuổi. Bấm từng cây để thổi.` : "Bấm từng cây nến để thổi."}
+              </p>
+              <Cake count={candleCount} lit={lit} setLit={setLit} onAllOut={allOut} />
+              <div className="flex gap-3 flex-wrap justify-center">
+                <button type="button" onClick={blowAll} disabled={!litCount}
+                  className="btn px-5 py-3 text-xl flex items-center gap-2 disabled:opacity-50 disabled:pointer-events-none" style={{ background: "var(--sky)" }}>
+                  <Wind size={22} strokeWidth={3} /> THỔI TẮT HẾT NẾN ({litCount})
+                </button>
+                {!litCount && (
+                  <button type="button" onClick={relight} className="btn px-4 py-3 text-xl flex items-center gap-2 bg-white">
+                    <RotateCcw size={20} strokeWidth={3} /> THẮP LẠI
+                  </button>
+                )}
+              </div>
+              <AnimatePresence mode="wait">
+                {fortune && (
+                  <motion.div key={fortune} initial={{ scale: 0, rotate: 8 }} animate={{ scale: 1, rotate: -1.5 }} exit={{ scale: 0 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 14 }}
+                    className="pop rounded-2xl px-4 py-3 text-center max-w-md" style={{ background: "var(--lemon)" }}>
+                    <div className="display text-base tracking-widest">QUẺ BÓI TUỔI MỚI</div>
+                    <div className="font-extrabold text-lg leading-snug">{fortune}</div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <div className="flex flex-col items-center gap-3 rounded-3xl border-[3.5px] border-dashed border-[#17131F] p-5 pt-16 relative" style={{ background: "rgba(155,123,255,.18)" }}>
+              <span className="absolute -top-4 left-4 display text-lg px-3 rounded-lg pop-sm" style={{ background: "var(--teal)", color: "#fff", WebkitTextStroke: "1px #17131F", paintOrder: "stroke fill" }}>QUÀ BÍ ẨN</span>
+              <GiftBox opened={opened} item={item} onOpen={openGift} onReset={resetGift} />
+            </div>
+          </section>
+
+          {/* Bảng sticker */}
+          <section aria-label="Bảng sticker" className="flex flex-col gap-4">
+            <div className="flex items-end justify-between gap-3 flex-wrap">
+              <h2 className="comic-title text-[clamp(30px,5vw,44px)]">BẢNG STICKER</h2>
+              <div className="display text-lg px-3 py-1 rounded-full pop-sm bg-white" style={{ fontVariantNumeric: "tabular-nums" }}>
+                ĐỘ LẦY: {laughs} {laughs >= 20 ? "· MẤT KIỂM SOÁT" : laughs >= 8 ? "· NGHIỆN RỒI" : ""}
+              </div>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {STICKERS.map((s, i) => <Sticker key={s.text} s={s} i={i} onHit={() => setLaughs(n => n + 1)} />)}
+            </div>
+          </section>
+
+          {/* Nút ăn mừng */}
+          <div className="flex justify-center">
+            <motion.button type="button" onClick={celebrate} whileHover={{ scale: 1.06, rotate: -2 }} whileTap={{ scale: .9 }}
+              animate={{ y: [0, -6, 0] }} transition={{ y: { duration: 1.2, repeat: Infinity } }}
+              className="btn px-8 py-4 text-3xl sm:text-4xl flex items-center gap-3" style={{ background: "var(--tomato)", color: "#fff", WebkitTextStroke: "1.5px #17131F", paintOrder: "stroke fill" }}>
+              <PartyPopper size={34} strokeWidth={2.5} color="#17131F" /> ĂN MỪNG!
+            </motion.button>
+          </div>
+        </div>
+      </motion.main>
+
+      <p className="text-center mt-6 font-extrabold text-sm opacity-75">Thiệp này không hoàn, không đổi, không bảo hành. Âm thanh được tạo trực tiếp trong trình duyệt.</p>
+
+      <AnimatePresence>
+        {toast && (
+          <motion.div key={toast} initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }}
+            className="fixed left-1/2 -translate-x-1/2 z-50 pop-sm rounded-2xl bg-white px-4 py-2 font-extrabold text-center w-[min(92vw,460px)]"
+            style={{ bottom: "calc(16px + env(safe-area-inset-bottom, 0px))", x: "-50%" }} role="status">
+            {toast}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <Customizer open={drawer} onClose={() => setDrawer(false)} cfg={cfg} setCfg={setCfg} />
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+
+</body>
+</html>
